@@ -5,8 +5,9 @@ import logging
 import secrets
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from sqlalchemy import select
 
 from .api import analyses, auth, files, projects
@@ -52,7 +53,25 @@ def create_app() -> FastAPI:
     def health():
         return {"status": "ok", "engine_version": ENGINE_VERSION}
 
+    _mount_frontend(app)
     return app
+
+
+def _mount_frontend(app: FastAPI) -> None:
+    """Если интерфейс собран (frontend/dist), отдаём его с того же адреса — запуск одним процессом."""
+    dist = settings.static_dir
+    if not (dist / "index.html").is_file():
+        return
+    root = dist.resolve()
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str):
+        if path.startswith("api/"):
+            raise HTTPException(404, "Not found")
+        target = (root / path).resolve()
+        if path and target.is_file() and root in target.parents:
+            return FileResponse(target)
+        return FileResponse(root / "index.html")
 
 
 app = create_app()

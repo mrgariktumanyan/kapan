@@ -10,6 +10,8 @@ from pathlib import Path
 class Settings:
     database_url: str = os.getenv("KAPAN_DATABASE_URL", "sqlite:///./kapan.db")
     storage_dir: Path = Path(os.getenv("KAPAN_STORAGE_DIR", "./storage"))
+    # Собранный интерфейс; если папка есть, backend отдаёт его сам (http://localhost:8000)
+    static_dir: Path = Path(os.getenv("KAPAN_STATIC_DIR", str(Path(__file__).resolve().parents[2] / "frontend" / "dist")))
     secret_key: str = os.getenv("KAPAN_SECRET_KEY", "change-me-in-production")
     token_ttl_minutes: int = int(os.getenv("KAPAN_TOKEN_TTL_MINUTES", "720"))
     admin_username: str = os.getenv("KAPAN_ADMIN_USERNAME", "admin")
