@@ -11,7 +11,7 @@ echo ============================================================
 where python >nul 2>nul
 if errorlevel 1 (
   echo [ОШИБКА] Python не найден. Установите Python 3.12 с python.org
-  echo          и при установке отметьте "Add python.exe to PATH".
+  echo          и при установке отметьте "Add python.exe to PATH"
   pause & exit /b 1
 )
 where npm >nul 2>nul
@@ -24,11 +24,11 @@ if not exist ".venv\Scripts\python.exe" (
   echo [1/3] Создаю окружение Python...
   python -m venv .venv || (pause & exit /b 1)
 )
-echo [1/3] Устанавливаю библиотеки Python (первый раз 2-5 минут)...
+echo [1/3] Устанавливаю библиотеки Python, первый раз 2-5 минут...
 ".venv\Scripts\python.exe" -m pip install --disable-pip-version-check -q -r backend\requirements.txt || (pause & exit /b 1)
 
 if not exist "frontend\dist\index.html" (
-  echo [2/3] Собираю интерфейс (первый раз 1-2 минуты)...
+  echo [2/3] Собираю интерфейс, первый раз 1-2 минуты...
   pushd frontend
   call npm ci --no-audit --no-fund || (popd & pause & exit /b 1)
   call npm run build || (popd & pause & exit /b 1)
