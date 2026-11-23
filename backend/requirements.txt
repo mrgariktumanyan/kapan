@@ -1,0 +1,14 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+sqlalchemy>=2.0
+psycopg2-binary>=2.9
+pyjwt>=2.8
+numpy>=1.26
+scipy>=1.11
+pandas>=2.1
+openpyxl>=3.1
+trimesh>=4.0
+manifold3d>=3.0
+rtree>=1.2
+ezdxf>=1.3
