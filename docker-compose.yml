@@ -1,0 +1,31 @@
+# Локальное развёртывание (работает без интернета после сборки образов).
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: kapan
+      POSTGRES_PASSWORD: ${KAPAN_DB_PASSWORD:-kapan}
+      POSTGRES_DB: kapan
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kapan"]
+      interval: 5s
+      retries: 10
+  backend:
+    build: ./backend
+    environment:
+      KAPAN_DATABASE_URL: postgresql+psycopg2://kapan:${KAPAN_DB_PASSWORD:-kapan}@db:5432/kapan
+      KAPAN_STORAGE_DIR: /data/storage
+      KAPAN_SECRET_KEY: ${KAPAN_SECRET_KEY:?задайте KAPAN_SECRET_KEY (32+ символа)}
+      KAPAN_ADMIN_PASSWORD: ${KAPAN_ADMIN_PASSWORD:?задайте пароль администратора}
+      KAPAN_CORS_ORIGINS: http://localhost:8080
+    volumes: [storage:/data/storage]
+    depends_on:
+      db: { condition: service_healthy }
+  frontend:
+    build: ./frontend
+    ports: ["8080:80"]
+    depends_on: [backend]
+volumes:
+  pgdata:
+  storage:
